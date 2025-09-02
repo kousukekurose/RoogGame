@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public enum PlayerState
+public enum PlayerState1
 {
     Idle,
     Move,
@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f;
     private Rigidbody rb;
     private Vector2 moveInput;
-    public PlayerState currentState;
+    public PlayerState1 currentState;
 
 
     private void Awake()
@@ -27,11 +27,11 @@ public class PlayerController : MonoBehaviour
         moveInput = context.ReadValue<Vector2>();
         if (moveInput != Vector2.zero)
         {
-            currentState = PlayerState.Move;
+            currentState = PlayerState1.Move;
         }
         else
         {
-            currentState = PlayerState.Idle;
+            currentState = PlayerState1.Idle;
         }
     }
 
@@ -40,28 +40,28 @@ public class PlayerController : MonoBehaviour
         if (context.performed)
         {
             Debug.Log("攻撃");
-            currentState = PlayerState.Attack;
+            currentState = PlayerState1.Attack;
         }
-        currentState = moveInput != Vector2.zero ? PlayerState.Move : PlayerState.Idle;
+        currentState = moveInput != Vector2.zero ? PlayerState1.Move : PlayerState1.Idle;
     }
 
     public void FixedUpdate()
     {
         Debug.Log(currentState + "現在のステート");
-        if (moveInput == Vector2.zero && currentState == PlayerState.Move)
+        if (moveInput == Vector2.zero && currentState == PlayerState1.Move)
         {
-            currentState = PlayerState.Idle;
+            currentState = PlayerState1.Idle;
         }
 
         switch (currentState)
         {
-            case PlayerState.Idle:
+            case PlayerState1.Idle:
                 break;
-            case PlayerState.Move:
+            case PlayerState1.Move:
                 Vector3 movement = new Vector3(moveInput.x, 0, moveInput.y) * moveSpeed * Time.fixedDeltaTime;
                 rb.MovePosition(rb.position + movement);
                 break;
-            case PlayerState.Attack:
+            case PlayerState1.Attack:
                 break;
             default:
                 break;
