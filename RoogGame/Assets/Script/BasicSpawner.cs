@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using Fusion.Sockets;
+using UnityEngine.InputSystem;
 
 public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -31,23 +32,36 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
             _spawnedCharacters.Remove(player);
         }
     }
-    public void OnInput(NetworkRunner runner, NetworkInput input) 
+    public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        var data = new NetworkInputData();
+        var data = new NetworkInputData(); // Keyboard + Gamepad 対応
+        Vector2 move = Vector2.zero;
+        
+        //キーボード対応
+        if (Keyboard.current != null) 
+            move += new 
+            Vector2((Keyboard.current.dKey.isPressed ? 1 : 0) +
+            (Keyboard.current.aKey.isPressed ? -1 : 0), 
+            (Keyboard.current.wKey.isPressed ? 1 : 0) + 
+            (Keyboard.current.sKey.isPressed ? -1 : 0));
 
-        if (Input.GetKey(KeyCode.W))
-            data.direction += Vector3.forward;
+        //ゲームパット対応
+        if (Gamepad.current != null) 
+            move += Gamepad.current.leftStick.ReadValue();
 
-        if (Input.GetKey(KeyCode.S))
-            data.direction += Vector3.back;
+        data.direction = new Vector3(move.x, 0, move.y); 
 
-        if (Input.GetKey(KeyCode.A))
-            data.direction += Vector3.left;
-
-        if (Input.GetKey(KeyCode.D))
-            data.direction += Vector3.right;
-
+        //旧InputSystemVersion
+        //if (Input.GetKey(KeyCode.W)) 
+        // data.direction += Vector3.forward; 
+        //if (Input.GetKey(KeyCode.S)) 
+        // data.direction += Vector3.back;
+        //if (Input.GetKey(KeyCode.A)) 
+        // data.direction += Vector3.left;
+        //if (Input.GetKey(KeyCode.D)) 
+        // data.direction += Vector3.right;
         input.Set(data);
+
     }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
